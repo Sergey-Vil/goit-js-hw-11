@@ -17,7 +17,7 @@ refs.searchForm.style.display = 'flex';
 refs.searchForm.style.justifyContent = 'center';
 refs.searchForm.style.padding = '20px 0';
 refs.searchForm.style.gap = '20px';
-// refs.btnLoadEl.style.visibility = 'hidden';
+refs.btnLoadEl.style.visibility = 'hidden';
 
 const perPage = 100;
 let page = 1;
