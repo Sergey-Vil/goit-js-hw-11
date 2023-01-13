@@ -23,16 +23,20 @@ const perPage = 100;
 let page = 1;
 let total;
 let data = '';
+let totalPages;
 
 refs.searchForm.addEventListener('submit', onSerch);
 
 function onSerch(e) {
   e.preventDefault();
-  refs.btnLoadEl.style.visibility = 'visibility';
+  // refs.btnLoadEl.style.visibility = 'visible';
 
   refs.galleryEl.innerHTML = '';
   data = e.target.elements.searchQuery.value.trim();
-  // console.log(page);
+
+  refs.btnLoadEl.hidden = false;
+
+  console.log(page);
   // console.log(totalPages);
   // console.log(total);
   // console.log(perPage);
@@ -40,20 +44,18 @@ function onSerch(e) {
   // if (totalPages > 0) {
   //   refs.btnLoadEl.style.visibility = 'visibility ';
   // }
-  if (!data) {
-    refs.btnLoadEl.style.visibility = 'hidden';
-  }
+  // if (!data) {
+  //   refs.btnLoadEl.hidden = true;
+  // }
 }
 async function getList(data, page) {
   const res = await getGallery(data, page);
   total = res.data.totalHits;
   const currentData = res.data.hits;
-  const totalPages = total / perPage;
-  console.log(page);
-  console.log(total);
-  console.log(perPage);
-  console.log(totalPages);
+  if (page > 1) {
+  }
 
+  console.log(page);
   console.log(res);
 
   if (currentData.length > 0) {
@@ -87,16 +89,22 @@ function createFotoCard(arr) {
     .join();
 
   refs.galleryEl.insertAdjacentHTML('beforeend', markup);
+  refs.btnLoadEl.hidden = false;
 }
 
 refs.btnLoadEl.addEventListener('click', onBtnLoadClick);
 
 function onBtnLoadClick(e) {
-  refs.btnLoadEl.style.visibility = 'visibility';
+  // refs.btnLoadEl.style.visibility = 'visibility';
   page += 1;
+  totalPages = total / perPage;
   getList(data, page);
-  console.log(page);
-  console.log(total);
-  console.log(perPage);
-  console.log(totalPages);
+
+  if (page >= totalPages) {
+    refs.btnLoadEl.style.visibility = 'hidden';
+  }
+  // console.log(page);
+  // console.log(total);
+  // console.log(perPage);
+  // console.log(totalPages);
 }
