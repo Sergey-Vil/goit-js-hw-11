@@ -95,4 +95,8 @@ function onBtnLoadClick(e) {
   refs.btnLoadEl.style.visibility = 'visibility';
   page += 1;
   getList(data, page);
+  console.log(page);
+  console.log(total);
+  console.log(perPage);
+  console.log(totalPages);
 }
