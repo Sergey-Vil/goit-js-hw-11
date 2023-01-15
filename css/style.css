@@ -1,0 +1,31 @@
+.gallery {
+  display: inline-flex;
+  flex-wrap: wrap;
+  max-width: 1600px;
+  grid-gap: 10px;
+  justify-content: center;
+  padding: 0;
+  margin-left: auto;
+  margin-right: auto;
+}
+.gallery img {
+  max-width: 350px;
+  height: 220px;
+}
+.info {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+.info-item {
+  text-align: center;
+}
+.load-more {
+  background: rgb(159, 159, 248);
+  margin: auto;
+  border-radius: 8px;
+  margin-bottom: 30px;
+}
+input {
+  border-radius: 8px;
+}

@@ -10,15 +10,10 @@ export async function getGallery(value, page = 1) {
     image_type: 'photo',
     orientation: 'horizontal',
     safesearch: 'true',
-    page: page,
-    per_page: 100,
+    page,
+    per_page: 40,
   };
   const response = axios.get(`${BASE_URL}`, { params: config });
 
   return response;
 }
-// function getGallery() {
-//   return fetch(
-//     `https://pixabay.com/api/?key=32799764-75091cc806dab77fae6a325d0&q=yellow+flowers&image_type=photo`
-//   ).then(response => console.log(response.json()));
-// }

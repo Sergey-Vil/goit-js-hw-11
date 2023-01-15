@@ -1,6 +1,9 @@
+import '../css/style.css';
 import axios from 'axios';
 import Notiflix from 'notiflix';
 import { getGallery } from '../js/getGalleryAPI';
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const refs = {
   searchForm: document.querySelector('#search-form'),
@@ -10,74 +13,88 @@ const refs = {
   btnLoadEl: document.querySelector('.load-more'),
 };
 
-refs.galleryEl.style.display = 'flex';
-refs.galleryEl.style.flexWrap = 'wrap';
 refs.searchForm.style.background = '#0f20ad';
 refs.searchForm.style.display = 'flex';
 refs.searchForm.style.justifyContent = 'center';
 refs.searchForm.style.padding = '20px 0';
 refs.searchForm.style.gap = '20px';
-// refs.btnLoadEl.style.visibility = 'hidden';
+refs.btnLoadEl.style.display = 'none';
 
-const perPage = 100;
+const perPage = 40;
 let page = 1;
 let total;
 let data = '';
-let totalPages;
+let totalPages = 0;
+let res = {};
 
 refs.searchForm.addEventListener('submit', onSerch);
 
 function onSerch(e) {
   e.preventDefault();
-  // refs.btnLoadEl.style.visibility = 'visible';
-
   refs.galleryEl.innerHTML = '';
   data = e.target.elements.searchQuery.value.trim();
+  page = 1;
+  e.target.reset();
+  if (data == '' || data.length === 0) {
+    // refs.galleryEl.innerHTML = '';
+    refs.btnLoadEl.style.display = 'none';
+    return;
+  }
 
-  refs.btnLoadEl.hidden = false;
+  if (data.length > 0) {
+    getList(data);
+  }
 
-  console.log(page);
-  // console.log(totalPages);
-  // console.log(total);
-  // console.log(perPage);
-  getList(data);
-  // if (totalPages > 0) {
-  //   refs.btnLoadEl.style.visibility = 'visibility ';
-  // }
-  // if (!data) {
-  //   refs.btnLoadEl.hidden = true;
-  // }
+  return;
 }
 async function getList(data, page) {
-  const res = await getGallery(data, page);
-  total = res.data.totalHits;
-  const currentData = res.data.hits;
-  if (page > 1) {
+  res = await getGallery(data, page);
+  console.log(res.data.hits);
+
+  if (res.data.total === 0) {
+    Notiflix.Notify.failure(
+      `Sorry, there are no images matching your search query. Please try again.`
+    );
+  }
+  if (res.data.hits.length > 0) {
+    createFotoCard(res.data.hits, page);
   }
 
-  console.log(page);
-  console.log(res);
-
-  if (currentData.length > 0) {
-    createFotoCard(currentData, page);
+  if (page === undefined && res.data.total > 0) {
+    Notiflix.Notify.success(`Hooray! We found ${res.data.total} images.`);
   }
+
+  if (page >= totalPages || res.data.hits.length < 40) {
+    refs.btnLoadEl.style.display = 'none';
+  }
+  data = '';
 }
 
 function createFotoCard(arr) {
   const markup = arr
-    .map(({ webformatURL, tags, likes, views, comments, downloads }) => {
-      return `
+    .map(
+      ({
+        webformatURL,
+        largeImageURL,
+        tags,
+        likes,
+        views,
+        comments,
+        downloads,
+      }) => {
+        return `
   <div class="photo-card">
-  <img src="${webformatURL} " alt="${tags}" loading="lazy" />
+   <a class="gallery__link" href="${largeImageURL}"><img src="${webformatURL}"   data-source="${largeImageURL}"alt="${tags}" loading="lazy" width = "390px" height = "250px"/></a>
+  
   <div class="info">
     <p class="info-item">
-      <b>Likes: ${likes}</b>
+      <b>Likes:<br> ${likes}</b>
     </p>
     <p class="info-item">
-      <b>Views: ${views}</b>
+      <b>Views:<br> ${views}</b>
     </p>
     <p class="info-item">
-      <b>Comments: ${comments}</b>
+      <b>Comments:<br> ${comments}</b>
     </p>
     <p class="info-item">
       <b>Downloads:<br> ${downloads}</b>
@@ -85,26 +102,19 @@ function createFotoCard(arr) {
   </div>
 </div>
   `;
-    })
+      }
+    )
     .join();
-
   refs.galleryEl.insertAdjacentHTML('beforeend', markup);
-  refs.btnLoadEl.hidden = false;
+  refs.btnLoadEl.style.display = 'block';
+  let gallery = new SimpleLightbox('.gallery a');
 }
 
 refs.btnLoadEl.addEventListener('click', onBtnLoadClick);
 
 function onBtnLoadClick(e) {
-  // refs.btnLoadEl.style.visibility = 'visibility';
   page += 1;
+  total = res.data.totalHits;
   totalPages = total / perPage;
   getList(data, page);
-
-  if (page >= totalPages) {
-    refs.btnLoadEl.style.visibility = 'hidden';
-  }
-  // console.log(page);
-  // console.log(total);
-  // console.log(perPage);
-  // console.log(totalPages);
 }
